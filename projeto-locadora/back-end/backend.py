@@ -11,7 +11,7 @@ def listar_filmes():
     filmes = db.session.query(Filme).all()
     retorno = []    
     for f in filmes:
-        retorno.append(f.json())
+      retorno.append(f.json())
     resposta = jsonify(retorno)
     resposta.headers.add("Access-Control-Allow-Origin", "*")
     return resposta
@@ -41,6 +41,40 @@ def incluir_filme():
     db.session.add(novo_filme)
     db.session.commit()
     return {"resultado":'ok'}
+
+@app.route("/excluir_filme", methods=['get'])
+def excluir_filme():
+    	
+		resposta = jsonify({"resultado": "ok", "detalhes": "ok"})
+		
+		try:
+
+			id = int(request.args.get("id"))
+
+			if (id < 1):
+				print(id)
+				resposta = jsonify({"resultado":"erro", "detalhes":"O id precisa ser maior ou igual a 1."})
+
+			else:
+				
+				filme = db.session.query(Filme).get(id)
+
+				if (filme is not None):
+
+					db.session.delete(filme)
+					db.session.commit()
+
+				else:
+
+					resposta = jsonify({"resultado":"erro", "detalhes":"Informação sobre filme não encontrada."})
+					
+		except Exception as e:
+			
+			resposta = jsonify({"resultado":"erro", "detalhes":str(e)})
+			
+		resposta.headers.add("Access-Control-Allow-Origin", "*")
+
+		return resposta
 
 if __name__ == "__main__":
 
